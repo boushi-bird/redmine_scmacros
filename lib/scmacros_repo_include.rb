@@ -41,16 +41,18 @@ module ScmacrosRepositoryInclude
 
   Redmine::WikiFormatting::Macros.register do
     desc "Includes and formats a file from repository.\n\n" +
-      " \{{repo_includewiki(file_path)}}\n"
+      " \{{repo_includewiki(file_path)}}\n" +
+      " \{{repo_includewiki(file_path, rev)}}\n"
     macro :repo_includewiki do |obj, args|
       
       return nil if args.length < 1
       file_path = args[0].strip
+      rev ||= args[1].strip if args.length > 1
     
       repo = @project.repository
       return nil unless repo
       
-      text = repo.cat(file_path)
+      text = repo.cat(file_path, rev)
       text = Redmine::CodesetUtil.to_utf8_by_setting(text)
       
       o = textilizable(text)
@@ -61,16 +63,18 @@ module ScmacrosRepositoryInclude
 
   Redmine::WikiFormatting::Macros.register do
     desc "Includes and formats a file from repository as a Markdown.\n\n" +
-      " \{{repo_includemd(file_path)}}\n"
+      " \{{repo_includemd(file_path)}}\n" +
+      " \{{repo_includemd(file_path, rev)}}\n"
     macro :repo_includemd do |obj, args|
       
       return nil if args.length < 1
       file_path = args[0].strip
+      rev ||= args[1].strip if args.length > 1
     
       repo = @project.repository
       return nil unless repo
       
-      text = repo.cat(file_path)
+      text = repo.cat(file_path, rev)
       text = Redmine::CodesetUtil.to_utf8_by_setting(text)
       
       o = Redmine::WikiFormatting.to_html(:markdown, text)
