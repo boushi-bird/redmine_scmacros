@@ -42,14 +42,22 @@ module ScmacrosRepositoryInclude
   Redmine::WikiFormatting::Macros.register do
     desc "Includes and formats a file from repository.\n\n" +
       " \{{repo_includewiki(file_path)}}\n" +
-      " \{{repo_includewiki(file_path, rev)}}\n"
+      " \{{repo_includewiki(file_path, rev)}}\n" +
+      " \{{repo_includewiki(file_path, rev, repo_name)}}\n"
     macro :repo_includewiki do |obj, args|
       
       return nil if args.length < 1
       file_path = args[0].strip
       rev ||= args[1].strip if args.length > 1
-    
-      repo = @project.repository
+
+      repo_name = args[2].strip if args.length > 2
+
+      if repo_name.nil?
+        repo = @project.repository
+      else
+        repo = @project.repositories.find{|r| r.name == repo_name }
+      end
+
       return nil unless repo
       
       text = repo.cat(file_path, rev)
